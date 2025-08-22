@@ -9,14 +9,11 @@ import (
 	pkgslices "github.com/jacobbrewer1/web/slices"
 )
 
-func isStatusOK(resp *http.Response) bool {
-	return resp.StatusCode >= 200 && resp.StatusCode < 300
-}
-
 type target struct {
 	url                 *url.URL
 	name                string
 	isRequestSuccessful func(*http.Response) bool
+	urlBuilder          func(*url.URL, string) *url.URL
 }
 
 var allTargets = map[string]*target{
