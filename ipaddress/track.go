@@ -55,4 +55,5 @@ func trackIP(ctx context.Context, trackingIP string) (*whoisResponse, error) {
 
 // displayIPResultTable displays the tracking results in a formatted table.
 func displayIPResultTable(ip string, result *whoisResponse) {
+
 }
