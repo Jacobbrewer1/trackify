@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"net/url"
 	"strings"
+
+	pkgslices "github.com/jacobbrewer1/web/slices"
 )
 
 type target struct {
@@ -11,7 +13,7 @@ type target struct {
 	name string
 }
 
-var targets = map[string]*target{
+var allTargets = map[string]*target{
 	"facebook": {
 		name: strings.ToTitle("facebook"),
 		url:  parseTargetURL("https://www.facebook.com/"),
@@ -92,7 +94,7 @@ var targets = map[string]*target{
 		name: strings.ToTitle("ello"),
 		url:  parseTargetURL("https://www.ello.co/"),
 	},
-	"producthunt": {
+	"product_hunt": {
 		name: strings.ToTitle("Product Hunt"),
 		url:  parseTargetURL("https://www.producthunt.com/@"),
 	},
@@ -100,7 +102,7 @@ var targets = map[string]*target{
 		name: strings.ToTitle("telegram"),
 		url:  parseTargetURL("https://www.telegram.me/"),
 	},
-	"weheartit": {
+	"we_heart_it": {
 		name: strings.ToTitle("we heart it"),
 		url:  parseTargetURL("https://www.weheartit.com/"),
 	},
@@ -112,4 +114,34 @@ func parseTargetURL(urlStr string) *url.URL {
 		panic(fmt.Sprintf("failed to parse target URL: %v", err))
 	}
 	return parsedURL
+}
+
+// filterTargets filters the available targets based on user input.
+func filterTargets(searchTargets []string) []*target {
+	if len(searchTargets) == 0 {
+		targets := make([]*target, 0, len(allTargets))
+		for _, v := range allTargets {
+			targets = append(targets, v)
+		}
+		return targets
+	}
+
+	var filtered []*target
+	targetSet := pkgslices.NewSet[string]()
+	for _, t := range searchTargets {
+		targetSet.Add(t)
+	}
+
+	for _, t := range targetSet.Items() {
+		searchableName := strings.TrimSpace(t)
+		searchableName = strings.ToLower(searchableName)
+		searchableName = strings.ReplaceAll(searchableName, " ", "_")
+		foundTarget, exists := allTargets[searchableName]
+		if !exists {
+			fmt.Printf("Warning: Unknown target platform %q specified, skipping.\n", t)
+			continue
+		}
+		filtered = append(filtered, foundTarget)
+	}
+	return filtered
 }

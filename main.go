@@ -16,13 +16,17 @@ func main() {
 			{
 				Name:  "username",
 				Usage: "Track online accounts for a given username",
+				Flags: []cli.Flag{
+					&cli.StringSliceFlag{
+						Name:    "target",
+						Aliases: []string{"t"},
+						Usage:   "Specify a target platform to search (can be specified multiple times). If not specified, all platforms will be searched.",
+					},
+				},
 				Before: func(ctx context.Context, cmd *cli.Command) (context.Context, error) {
 					args := cmd.Args()
-					switch {
-					case args.Len() < 1:
+					if args.Len() < 1 {
 						return nil, cli.Exit("username is required", 1)
-					case args.Len() > 1:
-						return nil, cli.Exit("too many arguments", 1)
 					}
 					return ctx, nil
 				},
@@ -30,6 +34,7 @@ func main() {
 					return username.TrackUsernames(
 						ctx,
 						cmd.Args().Slice(),
+						cmd.StringSlice("target"),
 					)
 				},
 			},

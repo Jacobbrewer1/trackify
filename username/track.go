@@ -5,14 +5,19 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"runtime"
+	"sync"
 
 	"github.com/jedib0t/go-pretty/v6/table"
+
+	pkgslices "github.com/jacobbrewer1/web/slices"
+	pkgsync "github.com/jacobbrewer1/web/sync"
 )
 
 // TrackUsernames tracks multiple usernames across various platforms.
-func TrackUsernames(ctx context.Context, usernames []string) error {
+func TrackUsernames(ctx context.Context, usernames, searchTarget []string) error {
 	for _, username := range usernames {
-		if err := TrackUsername(ctx, username); err != nil {
+		if err := TrackUsername(ctx, username, searchTarget); err != nil {
 			return fmt.Errorf("failed to track username %s: %w", username, err)
 		}
 	}
@@ -20,20 +25,50 @@ func TrackUsernames(ctx context.Context, usernames []string) error {
 }
 
 // TrackUsername tracks a single username across various platforms.
-func TrackUsername(ctx context.Context, username string) error {
-	found := make(map[string]bool)
-	for _, t := range targets {
-		ok, err := track(ctx, username, t)
-		if err != nil {
-			fmt.Printf("Error checking %s: %v\n", t.name, err)
-			found[t.name] = false
-			continue
-		}
+func TrackUsername(ctx context.Context, username string, searchTargets []string) error {
+	filteredTargets := filterTargets(searchTargets)
 
-		found[t.name] = ok
+	found := pkgslices.NewSet[string]()
+
+	var numWorkers uint = 1
+	if workerCount := runtime.NumCPU(); workerCount > 1 {
+		numWorkers = uint(workerCount)
 	}
 
-	displayResultTable(username, found)
+	var targetCount uint = 1
+	if count := len(filteredTargets); count > 1 {
+		targetCount = uint(count)
+	}
+
+	wp := pkgsync.NewWorkerPool(ctx, "username-tracker", numWorkers, targetCount)
+	defer wp.Close()
+
+	wg := &sync.WaitGroup{}
+	for _, t := range filteredTargets {
+		threadTarget := *t
+		wg.Add(1)
+		wp.SubmitBlocking(func(ctx context.Context) {
+			defer wg.Done()
+
+			ok, err := track(ctx, username, &threadTarget)
+			if err != nil {
+				fmt.Printf("Error checking %s: %v\n", threadTarget.name, err)
+				return
+			} else if !ok {
+				return
+			}
+
+			found.Add(threadTarget.name)
+		})
+	}
+	wg.Wait()
+
+	resultMap := make(map[string]bool)
+	for _, t := range filteredTargets {
+		resultMap[t.name] = found.Contains(t.name)
+	}
+
+	displayResultTable(username, resultMap)
 	return nil
 }
 
@@ -46,7 +81,7 @@ func track(ctx context.Context, username string, target *target) (bool, error) {
 		return false, fmt.Errorf("failed to create request for %s: %w", target.name, err)
 	}
 
-	client := http.Client{}
+	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
 		return false, fmt.Errorf("request failed for %s: %w", target.name, err)

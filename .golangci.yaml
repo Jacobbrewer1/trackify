@@ -94,6 +94,13 @@ linters:
       args-on-sep-lines: true
     testifylint:
       enable-all: true
+    importas:
+      aliases:
+        - pkg: github.com/jacobbrewer1/web/slices
+          alias: pkgslices
+        - pkg: github.com/jacobbrewer1/web/sync
+          alias: pkgsync
+      no-unaliased: true
   exclusions:
     generated: lax
     presets:
