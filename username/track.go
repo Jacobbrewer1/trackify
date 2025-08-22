@@ -89,7 +89,7 @@ func track(ctx context.Context, username string, target *target) (bool, error) {
 	defer func() {
 		_ = resp.Body.Close()
 	}()
-	return resp.StatusCode == http.StatusOK, nil
+	return target.isRequestSuccessful(resp), nil
 }
 
 // displayResultTable displays the tracking results in a formatted table.
