@@ -26,7 +26,7 @@ func main() {
 				Before: func(ctx context.Context, cmd *cli.Command) (context.Context, error) {
 					args := cmd.Args()
 					if args.Len() < 1 {
-						return nil, cli.Exit("username is required", 1)
+						return nil, cli.Exit("at least one username is required", 1)
 					}
 					return ctx, nil
 				},
