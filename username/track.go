@@ -45,20 +45,17 @@ func TrackUsername(ctx context.Context, username string, searchTargets []string)
 
 	wg := &sync.WaitGroup{}
 	for _, t := range filteredTargets {
-		threadTarget := *t
 		wg.Add(1)
 		wp.SubmitBlocking(func(ctx context.Context) {
 			defer wg.Done()
-
-			ok, err := track(ctx, username, &threadTarget)
+			ok, err := track(ctx, username, t)
 			if err != nil {
-				fmt.Printf("Error checking %s: %v\n", threadTarget.name, err)
+				fmt.Printf("Error checking %s: %v\n", t.name, err)
 				return
 			} else if !ok {
 				return
 			}
-
-			found.Add(threadTarget.name)
+			found.Add(t.name)
 		})
 	}
 	wg.Wait()

@@ -27,7 +27,7 @@ var allTargets = map[string]*target{
 	},
 	"twitter": {
 		name:                strings.ToTitle("twitter"),
-		url:                 parseTargetURL("https://www.twitter.com/"),
+		url:                 parseTargetURL("https://x.com/"),
 		isRequestSuccessful: isStatusOK,
 	},
 	"instagram": {
@@ -95,11 +95,6 @@ var allTargets = map[string]*target{
 		url:                 parseTargetURL("https://www.flickr.com/people/"),
 		isRequestSuccessful: isStatusOK,
 	},
-	"periscope": {
-		name:                strings.ToTitle("periscope"),
-		url:                 parseTargetURL("https://www.periscope.tv/"),
-		isRequestSuccessful: isStatusOK,
-	},
 	"twitch": {
 		name:                strings.ToTitle("twitch"),
 		url:                 parseTargetURL("https://www.twitch.tv/"),
@@ -108,11 +103,6 @@ var allTargets = map[string]*target{
 	"dribbble": {
 		name:                strings.ToTitle("dribbble"),
 		url:                 parseTargetURL("https://www.dribbble.com/"),
-		isRequestSuccessful: isStatusOK,
-	},
-	"stumbleupon": {
-		name:                strings.ToTitle("stumbleupon"),
-		url:                 parseTargetURL("https://www.stumbleupon.com/stumbler/"),
 		isRequestSuccessful: isStatusOK,
 	},
 	"ello": {
