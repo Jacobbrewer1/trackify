@@ -106,8 +106,8 @@ var targets = map[string]*target{
 	},
 }
 
-func parseTargetURL(string string) *url.URL {
-	parsedURL, err := url.Parse(string)
+func parseTargetURL(urlStr string) *url.URL {
+	parsedURL, err := url.Parse(urlStr)
 	if err != nil {
 		panic(fmt.Sprintf("failed to parse target URL: %v", err))
 	}

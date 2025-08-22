@@ -5,8 +5,9 @@ import (
 	"log"
 	"os"
 
-	"github.com/jacobbrewer1/trackify/username"
 	"github.com/urfave/cli/v3"
+
+	"github.com/jacobbrewer1/trackify/username"
 )
 
 func main() {
@@ -19,16 +20,16 @@ func main() {
 					args := cmd.Args()
 					switch {
 					case args.Len() < 1:
-						return ctx, cli.Exit("username is required", 1)
+						return nil, cli.Exit("username is required", 1)
 					case args.Len() > 1:
-						return ctx, cli.Exit("too many arguments", 1)
+						return nil, cli.Exit("too many arguments", 1)
 					}
 					return ctx, nil
 				},
 				Action: func(ctx context.Context, cmd *cli.Command) error {
-					return username.TrackUsername(
+					return username.TrackUsernames(
 						ctx,
-						cmd.Args().First(),
+						cmd.Args().Slice(),
 					)
 				},
 			},
