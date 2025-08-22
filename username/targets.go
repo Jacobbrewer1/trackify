@@ -102,10 +102,6 @@ var allTargets = map[string]*target{
 		name: strings.ToTitle("telegram"),
 		url:  parseTargetURL("https://www.telegram.me/"),
 	},
-	"we_heart_it": {
-		name: strings.ToTitle("we heart it"),
-		url:  parseTargetURL("https://www.weheartit.com/"),
-	},
 }
 
 func parseTargetURL(urlStr string) *url.URL {
