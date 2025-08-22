@@ -9,6 +9,7 @@ import (
 
 	"github.com/urfave/cli/v3"
 
+	"github.com/jacobbrewer1/trackify/ipaddress"
 	"github.com/jacobbrewer1/trackify/username"
 )
 
@@ -41,6 +42,23 @@ func main() {
 						ctx,
 						cmd.Args().Slice(),
 						cmd.StringSlice("target"),
+					)
+				},
+			},
+			{
+				Name:  "ip",
+				Usage: "Track given IP addresses",
+				Before: func(ctx context.Context, cmd *cli.Command) (context.Context, error) {
+					args := cmd.Args()
+					if args.Len() < 1 {
+						return nil, cli.Exit("at least one IP Address is required", 1)
+					}
+					return ctx, nil
+				},
+				Action: func(ctx context.Context, cmd *cli.Command) error {
+					return ipaddress.TrackIPAddresses(
+						ctx,
+						cmd.Args().Slice(),
 					)
 				},
 			},
