@@ -4,11 +4,17 @@ import (
 	"context"
 	"log"
 	"os"
+	"os/signal"
+	"syscall"
 
 	"github.com/urfave/cli/v3"
 
 	"github.com/jacobbrewer1/trackify/username"
 )
+
+func coreContext() (context.Context, context.CancelFunc) {
+	return signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+}
 
 func main() {
 	cmd := &cli.Command{
@@ -41,7 +47,10 @@ func main() {
 		},
 	}
 
-	if err := cmd.Run(context.Background(), os.Args); err != nil {
+	ctx, cancel := coreContext()
+	defer cancel()
+
+	if err := cmd.Run(ctx, os.Args); err != nil {
 		log.Fatal(err)
 	}
 }
