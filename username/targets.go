@@ -15,7 +15,6 @@ type target struct {
 	url                 *url.URL
 	name                string
 	isRequestSuccessful func(*http.Response) bool
-	urlBuilder          func(*url.URL, string) *url.URL
 	requestEditor       []requestEditorFunc
 }
 
