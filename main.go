@@ -52,6 +52,6 @@ func main() {
 
 	if err := cmd.Run(ctx, os.Args); err != nil {
 		cancel()
-		log.Fatal(err)
+		log.Fatal(err) // nolint:gocritic // Calling cancel() before exiting on the line above
 	}
 }
