@@ -71,11 +71,13 @@ func TrackUsername(ctx context.Context, username string, searchTargets []string)
 
 // track checks if a username exists on a given target platform.
 func track(ctx context.Context, username string, target *target) (bool, error) {
-	targetURL := target.url.JoinPath(username)
-
-	req, err := http.NewRequestWithContext(ctx, "GET", targetURL.String(), http.NoBody)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, target.url.String(), http.NoBody)
 	if err != nil {
 		return false, fmt.Errorf("failed to create request for %s: %w", target.name, err)
+	}
+
+	for _, editor := range target.requestEditor {
+		editor(req, username)
 	}
 
 	client := &http.Client{}
