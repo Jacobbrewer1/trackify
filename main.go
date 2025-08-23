@@ -51,6 +51,7 @@ func main() {
 	defer cancel()
 
 	if err := cmd.Run(ctx, os.Args); err != nil {
+		cancel()
 		log.Fatal(err)
 	}
 }
