@@ -2,6 +2,7 @@ package username
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"os"
@@ -46,7 +47,6 @@ func TrackUsername(ctx context.Context, username string, searchTargets []string)
 	}
 
 	childCtx, cancel := context.WithCancel(ctx)
-	defer cancel()
 
 	wp := pkgsync.NewWorkerPool(childCtx, "username-tracker", numWorkers, targetCount)
 	defer wp.Close()
@@ -67,13 +67,15 @@ func TrackUsername(ctx context.Context, username string, searchTargets []string)
 		})
 	}
 	wg.Wait()
+	cancel()
+
 	resultMap := make(map[string]bool)
 	for _, t := range filteredTargets {
 		resultMap[t.name] = found.Contains(t.name)
 	}
 
 	displayResultTable(username, resultMap)
-	return nil
+	return errors.New("test")
 }
 
 // track checks if a username exists on a given target platform.
