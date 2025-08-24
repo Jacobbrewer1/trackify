@@ -5,6 +5,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
+	"reflect"
+	"strings"
+
+	"github.com/jedib0t/go-pretty/v6/table"
 )
 
 // TrackIPAddresses tracks multiple IP addresses.
@@ -19,8 +24,11 @@ func TrackIPAddresses(ctx context.Context, ips []string) error {
 
 // TrackIPAddress tracks the given IP address.
 func TrackIPAddress(ctx context.Context, ip string) error {
-	fmt.Printf("Tracking IP address: %s\n", ip)
-	// Placeholder for actual tracking logic
+	result, err := trackIP(ctx, ip)
+	if err != nil {
+		return fmt.Errorf("failed to track IP %s: %w", ip, err)
+	}
+	displayIPResultTable(ip, result)
 	return nil
 }
 
@@ -55,5 +63,57 @@ func trackIP(ctx context.Context, trackingIP string) (*whoisResponse, error) {
 
 // displayIPResultTable displays the tracking results in a formatted table.
 func displayIPResultTable(ip string, result *whoisResponse) {
+	t := table.NewWriter()
+	title := "Tracking results for IP Address: " + ip
+	t.SetTitle(title)
+	t.SetOutputMirror(os.Stdout)
+	t.AppendHeader(table.Row{"Field", "Value"})
+	t.SortBy([]table.SortBy{{Name: "Field", Mode: table.Asc}})
+	t.Style().Size.WidthMin = len(title) + 4
 
+	appendWhoisData(t, result)
+
+	t.Render()
+}
+
+func appendWhoisData(t table.Writer, data *whoisResponse) {
+	appendTableRow(t, "ip type", data.Type)
+	appendTableRow(t, "country", data.Country)
+	appendTableRow(t, "country code", data.CountryCode)
+	appendTableRow(t, "continent", data.Continent)
+	appendTableRow(t, "continent code", data.ContinentCode)
+	appendTableRow(t, "region", data.Region)
+	appendTableRow(t, "region code", data.RegionCode)
+	appendTableRow(t, "location latitude", fmt.Sprintf("%f", data.Latitude))
+	appendTableRow(t, "location longitude", fmt.Sprintf("%f", data.Longitude))
+	appendTableRow(t, "location link", googleMapsLink(data.Latitude, data.Longitude))
+	appendTableRow(t, "zip", data.Postal)
+	appendTableRow(t, "calling code", data.CallingCode)
+	appendTableRow(t, "capital", data.Capital)
+	appendTableRow(t, "boarders", data.Borders)
+	appendTableRow(t, "connection asn", data.Connection.Asn)
+	appendTableRow(t, "connection org", data.Connection.Org)
+	appendTableRow(t, "connection isp", data.Connection.Isp)
+	appendTableRow(t, "connection domain", data.Connection.Domain)
+	appendTableRow(t, "timezone id", data.Timezone.Id)
+	appendTableRow(t, "timezone abbr", data.Timezone.Abbr)
+	appendTableRow(t, "timezone is dst", data.Timezone.IsDst)
+	appendTableRow(t, "timezone offset", data.Timezone.Offset)
+	appendTableRow(t, "timezone utc", data.Timezone.Utc)
+	appendTableRow(t, "timezone current time", data.Timezone.CurrentTime)
+}
+
+func googleMapsLink(lat, lon float64) string {
+	return fmt.Sprintf("https://www.google.com/maps/@%f,%f", lat, lon)
+}
+
+func appendTableRow[T comparable](t table.Writer, field string, value T) {
+	if reflect.TypeOf(value).Kind() == reflect.String {
+		str, ok := any(value).(string)
+		if !ok || strings.TrimSpace(str) == "" {
+			value, _ = any("Failed casting to string").(T)
+		}
+	}
+
+	t.AppendRow([]any{strings.ToTitle(field), value})
 }
