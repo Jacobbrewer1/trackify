@@ -67,8 +67,6 @@ func TrackUsername(ctx context.Context, username string, searchTargets []string)
 		})
 	}
 	wg.Wait()
-	cancel()
-
 	resultMap := make(map[string]bool)
 	for _, t := range filteredTargets {
 		resultMap[t.name] = found.Contains(t.name)
