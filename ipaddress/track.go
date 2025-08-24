@@ -10,14 +10,19 @@ import (
 	"strings"
 
 	"github.com/jedib0t/go-pretty/v6/table"
+	"go.uber.org/multierr"
 )
 
 // TrackIPAddresses tracks multiple IP addresses.
 func TrackIPAddresses(ctx context.Context, ips []string) error {
+	var merr error
 	for _, ip := range ips {
 		if err := TrackIPAddress(ctx, ip); err != nil {
-			return fmt.Errorf("failed to track IP address %s: %w", ip, err)
+			merr = multierr.Append(merr, err)
 		}
+	}
+	if merr != nil {
+		return fmt.Errorf("one or more IP tracking operations failed: %w", merr)
 	}
 	return nil
 }
@@ -58,6 +63,9 @@ func trackIP(ctx context.Context, trackingIP string) (*whoisResponse, error) {
 	if err := json.NewDecoder(resp.Body).Decode(&whoisResp); err != nil {
 		return nil, fmt.Errorf("failed to decode response for %s: %w", trackingIP, err)
 	}
+	if !whoisResp.Success {
+		return nil, fmt.Errorf("unsuccessful response for %s: %s", trackingIP, whoisResp.Message)
+	}
 	return &whoisResp, nil
 }
 
@@ -76,6 +84,7 @@ func displayIPResultTable(ip string, result *whoisResponse) {
 	t.Render()
 }
 
+// appendWhoisData appends the whois data to the table.
 func appendWhoisData(t table.Writer, data *whoisResponse) {
 	appendTableRow(t, "ip type", data.Type)
 	appendTableRow(t, "country", data.Country)
@@ -103,10 +112,12 @@ func appendWhoisData(t table.Writer, data *whoisResponse) {
 	appendTableRow(t, "timezone current time", data.Timezone.CurrentTime)
 }
 
+// googleMapsLink generates a Google Maps link for the given latitude and longitude.
 func googleMapsLink(lat, lon float64) string {
 	return fmt.Sprintf("https://www.google.com/maps/@%f,%f", lat, lon)
 }
 
+// appendTableRow appends a row to the table, ensuring that string values are not empty or whitespace.
 func appendTableRow[T comparable](t table.Writer, field string, value T) {
 	if reflect.TypeOf(value).Kind() == reflect.String {
 		str, ok := any(value).(string)

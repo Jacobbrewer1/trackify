@@ -21,6 +21,7 @@ var whoIsApiURL = sync.OnceValue(func() *url.URL {
 type whoisResponse struct {
 	Ip            string  `json:"ip"`
 	Success       bool    `json:"success"`
+	Message       string  `json:"message"`
 	Type          string  `json:"type"`
 	Continent     string  `json:"continent"`
 	ContinentCode string  `json:"continent_code"`
