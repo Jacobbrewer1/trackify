@@ -2,7 +2,6 @@ package username
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"net/http"
 	"os"
@@ -75,7 +74,7 @@ func TrackUsername(ctx context.Context, username string, searchTargets []string)
 	}
 
 	displayResultTable(username, resultMap)
-	return errors.New("test")
+	return nil
 }
 
 // track checks if a username exists on a given target platform.
