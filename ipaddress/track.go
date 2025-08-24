@@ -22,7 +22,7 @@ func TrackIPAddresses(ctx context.Context, ips []string) error {
 		}
 	}
 	if merr != nil {
-		return fmt.Errorf("one or more IP tracking operations failed: %w", merr)
+		return fmt.Errorf("one or more errors occurred: %w", merr)
 	}
 	return nil
 }

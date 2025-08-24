@@ -9,6 +9,7 @@ import (
 	"sync"
 
 	"github.com/jedib0t/go-pretty/v6/table"
+	"go.uber.org/multierr"
 
 	pkgslices "github.com/jacobbrewer1/web/slices"
 	pkgsync "github.com/jacobbrewer1/web/sync"
@@ -16,10 +17,14 @@ import (
 
 // TrackUsernames tracks multiple usernames across various platforms.
 func TrackUsernames(ctx context.Context, usernames, searchTarget []string) error {
+	var merr error
 	for _, username := range usernames {
 		if err := TrackUsername(ctx, username, searchTarget); err != nil {
-			return fmt.Errorf("failed to track username %s: %w", username, err)
+			merr = multierr.Append(merr, err)
 		}
+	}
+	if merr != nil {
+		return fmt.Errorf("one or more errors occurred: %w", merr)
 	}
 	return nil
 }
@@ -40,7 +45,10 @@ func TrackUsername(ctx context.Context, username string, searchTargets []string)
 		targetCount = uint(count)
 	}
 
-	wp := pkgsync.NewWorkerPool(ctx, "username-tracker", numWorkers, targetCount)
+	childCtx, cancel := context.WithCancel(ctx)
+	defer cancel()
+
+	wp := pkgsync.NewWorkerPool(childCtx, "username-tracker", numWorkers, targetCount)
 	defer wp.Close()
 
 	wg := &sync.WaitGroup{}
@@ -59,6 +67,7 @@ func TrackUsername(ctx context.Context, username string, searchTargets []string)
 		})
 	}
 	wg.Wait()
+	cancel()
 
 	resultMap := make(map[string]bool)
 	for _, t := range filteredTargets {
