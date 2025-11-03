@@ -6,8 +6,9 @@ toolchain go1.24.4
 
 require (
 	github.com/jacobbrewer1/web v0.0.7
-	github.com/jedib0t/go-pretty/v6 v6.6.8
+	github.com/jedib0t/go-pretty/v6 v6.6.9
 	github.com/urfave/cli/v3 v3.4.1
+	go.uber.org/multierr v1.11.0
 )
 
 require (
@@ -30,7 +31,6 @@ require (
 	github.com/rogpeppe/go-internal v1.13.1 // indirect
 	github.com/stretchr/objx v0.5.2 // indirect
 	github.com/stretchr/testify v1.10.0 // indirect
-	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/sys v0.33.0 // indirect
 	golang.org/x/text v0.25.0 // indirect
 	golang.org/x/time v0.11.0 // indirect
