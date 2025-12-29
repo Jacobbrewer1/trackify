@@ -17,8 +17,8 @@ github.com/jacobbrewer1/uhttp v0.0.12 h1:815Gz4rH7SEwkWPw73XtPUTBAUeyiw19EoybHtX
 github.com/jacobbrewer1/uhttp v0.0.12/go.mod h1:VcQ3tWUZv+L1l+xNLkNKhIarKL0lqg8QQFU1zLYgSaQ=
 github.com/jacobbrewer1/web v0.0.7 h1:p4gPmgL73jHhsyQfVX6wWcog2WGI6ymcxyQEVy5X5cQ=
 github.com/jacobbrewer1/web v0.0.7/go.mod h1:N8n2INqORXkhn4rErwO73xQNZgBtzzPMK496HtJ5liI=
-github.com/jedib0t/go-pretty/v6 v6.6.8 h1:JnnzQeRz2bACBobIaa/r+nqjvws4yEhcmaZ4n1QzsEc=
-github.com/jedib0t/go-pretty/v6 v6.6.8/go.mod h1:YwC5CE4fJ1HFUDeivSV1r//AmANFHyqczZk+U6BDALU=
+github.com/jedib0t/go-pretty/v6 v6.7.8 h1:BVYrDy5DPBA3Qn9ICT+PokP9cvCv1KaHv2i+Hc8sr5o=
+github.com/jedib0t/go-pretty/v6 v6.7.8/go.mod h1:YwC5CE4fJ1HFUDeivSV1r//AmANFHyqczZk+U6BDALU=
 github.com/klauspost/compress v1.18.0 h1:c/Cqfb0r+Yi+JtIEq73FWXVkRonBlf0CRNYc8Zttxdo=
 github.com/klauspost/compress v1.18.0/go.mod h1:2Pp+KzxcywXVXMr50+X0Q/Lsb43OQHYWRCY2AiWywWQ=
 github.com/kr/pretty v0.3.1 h1:flRD4NNwYAUpkphVc1HcthR4KEIFJ65n8Mw5qdRn3LE=
